@@ -1,43 +1,106 @@
 import java.util.ArrayList;
-import java.util.Scanner;
 
+// -------------------- CLIENTE --------------------
 class Cliente {
-    String nombre;
-    String telefono;
-    ArrayList<Bicicleta> bicicletas = new ArrayList<>();
+    private String nombre;
+    private String telefono;
 
     public Cliente(String nombre, String telefono) {
         this.nombre = nombre;
         this.telefono = telefono;
     }
 
-    public void agregarBicicleta(Bicicleta bici) {
-        bicicletas.add(bici);
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    @Override
+    public String toString() {
+        return "Cliente: " + nombre + " | Teléfono: " + telefono;
     }
 }
 
+// -------------------- BICICLETA --------------------
 class Bicicleta {
-    String marca;
-    String modelo;
+    private String marca;
+    private String modelo;
+    private Cliente cliente;
 
-    public Bicicleta(String marca, String modelo) {
+    public Bicicleta(String marca, String modelo, Cliente cliente) {
         this.marca = marca;
         this.modelo = modelo;
+        this.cliente = cliente;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    @Override
+    public String toString() {
+        return "Bicicleta: " + marca + " " + modelo + " | Dueño: " + cliente.getNombre();
     }
 }
 
+// -------------------- MECANICO --------------------
 class Mecanico {
-    String nombre;
+    private String nombre;
 
     public Mecanico(String nombre) {
         this.nombre = nombre;
     }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    @Override
+    public String toString() {
+        return "Mecánico: " + nombre;
+    }
 }
 
+// -------------------- REPUESTO --------------------
 class Repuesto {
-    String nombre;
-    int cantidad;
-    double costoUnitario;
+    private String nombre;
+    private int cantidad;
+    private double costoUnitario;
 
     public Repuesto(String nombre, int cantidad, double costoUnitario) {
         this.nombre = nombre;
@@ -45,26 +108,70 @@ class Repuesto {
         this.costoUnitario = costoUnitario;
     }
 
-    public double calcularCosto() {
+    public String getNombre() {
+        return nombre;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public double getCostoUnitario() {
+        return costoUnitario;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public void setCostoUnitario(double costoUnitario) {
+        this.costoUnitario = costoUnitario;
+    }
+
+    public double calcularSubtotal() {
         return cantidad * costoUnitario;
+    }
+
+    @Override
+    public String toString() {
+        return nombre + " | Cantidad: " + cantidad +
+                " | Costo unitario: $" + costoUnitario;
     }
 }
 
+// -------------------- ORDEN DE SERVICIO --------------------
 class OrdenServicio {
-    Bicicleta bicicleta;
-    String descripcionProblema;
-    String fechaIngreso;
-    String estado;
-    Mecanico mecanico;
-    ArrayList<String> tareas = new ArrayList<>();
-    ArrayList<Repuesto> repuestos = new ArrayList<>();
-    double manoObra;
+    private Bicicleta bicicleta;
+    private String descripcion;
+    private String fechaIngreso;
+    private String estado;
+    private Mecanico mecanico;
+    private ArrayList<String> tareas;
+    private ArrayList<Repuesto> repuestos;
 
-    public OrdenServicio(Bicicleta bicicleta, String descripcionProblema, String fechaIngreso) {
+    public OrdenServicio(Bicicleta bicicleta, String descripcion, String fechaIngreso) {
         this.bicicleta = bicicleta;
-        this.descripcionProblema = descripcionProblema;
+        this.descripcion = descripcion;
         this.fechaIngreso = fechaIngreso;
         this.estado = "Recibida";
+        this.tareas = new ArrayList<>();
+        this.repuestos = new ArrayList<>();
+    }
+
+    public Bicicleta getBicicleta() {
+        return bicicleta;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public void asignarMecanico(Mecanico mecanico) {
@@ -79,144 +186,57 @@ class OrdenServicio {
         repuestos.add(repuesto);
     }
 
-    public void cambiarEstado(String nuevoEstado) {
-        this.estado = nuevoEstado;
-    }
-
     public double calcularCostoTotal() {
-        double totalRepuestos = 0;
+        double total = 0;
         for (Repuesto r : repuestos) {
-            totalRepuestos += r.calcularCosto();
+            total += r.calcularSubtotal();
         }
-        return manoObra + totalRepuestos;
+        return total;
     }
 
-    public void mostrarResumen() {
-        System.out.println("\n----- ORDEN DE SERVICIO -----");
-        System.out.println("Bicicleta: " + bicicleta.marca + " " + bicicleta.modelo);
-        System.out.println("Problema: " + descripcionProblema);
-        System.out.println("Fecha ingreso: " + fechaIngreso);
-        System.out.println("Estado: " + estado);
-        System.out.println("Mecánico: " + (mecanico != null ? mecanico.nombre : "No asignado"));
-        System.out.println("Tareas: " + tareas);
-        System.out.println("Costo total: $" + calcularCostoTotal());
+    @Override
+    public String toString() {
+        return "\n----- ORDEN DE SERVICIO -----\n" +
+                bicicleta +
+                "\nProblema: " + descripcion +
+                "\nFecha ingreso: " + fechaIngreso +
+                "\nEstado: " + estado +
+                "\nMecánico: " + (mecanico != null ? mecanico.getNombre() : "No asignado") +
+                "\nTareas: " + tareas +
+                "\nCosto total: $" + calcularCostoTotal();
     }
 }
 
+// -------------------- MAIN --------------------
 public class Main {
 
     public static void main(String[] args) {
 
-        Scanner sc = new Scanner(System.in);
-        ArrayList<Cliente> clientes = new ArrayList<>();
-        ArrayList<Mecanico> mecanicos = new ArrayList<>();
-        ArrayList<OrdenServicio> ordenes = new ArrayList<>();
+        Cliente cliente1 = new Cliente("Juan Pérez", "3001234567");
 
-        mecanicos.add(new Mecanico("Carlos"));
-        mecanicos.add(new Mecanico("Luis"));
+        Bicicleta bici1 = new Bicicleta("GW", "Rin 29", cliente1);
 
-        int opcion;
+        Mecanico mecanico1 = new Mecanico("Carlos");
 
-        do {
-            System.out.println("\n--- MENU TALLER ---");
-            System.out.println("1. Registrar cliente");
-            System.out.println("2. Crear orden de servicio");
-            System.out.println("3. Cambiar estado de orden");
-            System.out.println("4. Mostrar ordenes");
-            System.out.println("5. Salir");
-            System.out.print("Opción: ");
-            opcion = sc.nextInt();
-            sc.nextLine();
+        OrdenServicio orden1 = new OrdenServicio(
+                bici1,
+                "Frenos dañados",
+                "03/03/2026"
+        );
 
-            switch (opcion) {
+        orden1.asignarMecanico(mecanico1);
 
-                case 1:
-                    System.out.print("Nombre cliente: ");
-                    String nombre = sc.nextLine();
-                    System.out.print("Telefono: ");
-                    String telefono = sc.nextLine();
+        orden1.agregarTarea("Ajuste de frenos");
+        orden1.agregarTarea("Cambio de guayas");
 
-                    Cliente cliente = new Cliente(nombre, telefono);
+        orden1.agregarRepuesto(new Repuesto("Guaya de freno", 2, 15000));
+        orden1.agregarRepuesto(new Repuesto("Pastillas", 1, 25000));
 
-                    System.out.print("Marca bicicleta: ");
-                    String marca = sc.nextLine();
-                    System.out.print("Modelo bicicleta: ");
-                    String modelo = sc.nextLine();
+        orden1.setEstado("En proceso");
 
-                    Bicicleta bici = new Bicicleta(marca, modelo);
-                    cliente.agregarBicicleta(bici);
+        System.out.println(orden1);
 
-                    clientes.add(cliente);
-                    System.out.println("Cliente registrado.");
-                    break;
-
-                case 2:
-                    if (clientes.isEmpty()) {
-                        System.out.println("No hay clientes registrados.");
-                        break;
-                    }
-
-                    Cliente c = clientes.get(0); // simplificado
-
-                    Bicicleta b = c.bicicletas.get(0);
-
-                    System.out.print("Descripción del problema: ");
-                    String desc = sc.nextLine();
-
-                    System.out.print("Fecha ingreso: ");
-                    String fecha = sc.nextLine();
-
-                    OrdenServicio orden = new OrdenServicio(b, desc, fecha);
-
-                    orden.asignarMecanico(mecanicos.get(0));
-
-                    System.out.print("Costo mano de obra: ");
-                    orden.manoObra = sc.nextDouble();
-                    sc.nextLine();
-
-                    System.out.print("Agregar tarea: ");
-                    orden.agregarTarea(sc.nextLine());
-
-                    System.out.print("Nombre repuesto: ");
-                    String nomRep = sc.nextLine();
-                    System.out.print("Cantidad: ");
-                    int cant = sc.nextInt();
-                    System.out.print("Costo unitario: ");
-                    double costo = sc.nextDouble();
-                    sc.nextLine();
-
-                    orden.agregarRepuesto(new Repuesto(nomRep, cant, costo));
-
-                    ordenes.add(orden);
-                    System.out.println("Orden creada.");
-                    break;
-
-                case 3:
-                    if (!ordenes.isEmpty()) {
-                        OrdenServicio o = ordenes.get(0);
-                        System.out.println("1. En proceso");
-                        System.out.println("2. Finalizada");
-                        System.out.println("3. Entregada");
-                        int est = sc.nextInt();
-                        sc.nextLine();
-
-                        if (est == 1) o.cambiarEstado("En proceso");
-                        if (est == 2) o.cambiarEstado("Finalizada");
-                        if (est == 3) o.cambiarEstado("Entregada");
-
-                        System.out.println("Estado actualizado.");
-                    }
-                    break;
-
-                case 4:
-                    for (OrdenServicio o : ordenes) {
-                        o.mostrarResumen();
-                    }
-                    break;
-            }
-
-        } while (opcion != 5);
-
-        sc.close();
+        orden1.setEstado("Finalizada");
+        System.out.println("\nEstado actualizado: " + orden1.getEstado());
     }
 }
